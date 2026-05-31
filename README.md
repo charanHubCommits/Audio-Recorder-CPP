@@ -1,6 +1,6 @@
-# projectAudio
+# Audio Recorder (C++)
 
-A command-line audio recorder and player written in C++. It captures microphone input, stores recordings in memory by name, and plays them back through the default audio output device using [PortAudio](http://www.portaudio.com/).
+A cross-platform command-line audio recorder and player written in C++. It captures microphone input, stores recordings in memory by name, and plays them back through the default audio output device using [PortAudio](http://www.portaudio.com/). Supported on macOS, Linux, and Windows.
 
 ## Features
 
@@ -11,10 +11,23 @@ A command-line audio recorder and player written in C++. It captures microphone 
 
 ## Requirements
 
-- C++ compiler with C++11 support (e.g. `g++` or `clang++`)
+- C++ compiler with C++11 support (e.g. MSVC, `g++`, or `clang++`)
+- CMake 3.20 or later
 - [PortAudio](http://www.portaudio.com/) development libraries
 
 ### Installing PortAudio
+
+**Windows ([vcpkg](https://vcpkg.io/)):**
+
+```powershell
+vcpkg install portaudio
+```
+
+**Windows ([MSYS2](https://www.msys2.org/)):**
+
+```bash
+pacman -S mingw-w64-x86_64-portaudio
+```
 
 **macOS (Homebrew):**
 
@@ -36,7 +49,36 @@ sudo dnf install portaudio-devel
 
 ## Building
 
-Compile from the project root:
+### CMake (recommended)
+
+**macOS / Linux** — from the project root:
+
+```bash
+cmake -S . -B build
+cmake --build build
+```
+
+The executable is at `build/recorder`.
+
+**Windows (vcpkg)** — pass the vcpkg toolchain file when configuring:
+
+```powershell
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build build --config Release
+```
+
+The executable is at `build\Release\recorder.exe` (Visual Studio generator) or `build\recorder.exe` (single-config generators such as Ninja).
+
+**Windows (MSYS2 MinGW)** — from an MSYS2 MinGW shell:
+
+```bash
+cmake -S . -B build -G "MinGW Makefiles"
+cmake --build build
+```
+
+The executable is at `build/recorder.exe`.
+
+### Manual compilation (macOS / Linux)
 
 ```bash
 g++ -std=c++11 recorder.cpp -o recorder -lportaudio -pthread
@@ -48,12 +90,17 @@ On macOS with Homebrew, you may need to pass include and library paths:
 g++ -std=c++11 recorder.cpp -o recorder -I/opt/homebrew/include -L/opt/homebrew/lib -lportaudio -pthread
 ```
 
+On Windows, use the CMake build instead of manual compilation.
+
 ## Usage
 
 Run the executable:
 
 ```bash
-./recorder
+./build/recorder              # macOS / Linux (CMake)
+./recorder                    # macOS / Linux (manual build)
+build\Release\recorder.exe    # Windows (Visual Studio generator)
+build\recorder.exe            # Windows (MinGW / Ninja)
 ```
 
 Available commands:
@@ -78,6 +125,16 @@ play hello
 stop
 ```
 
+## Project Structure
+
+```
+projectAudio/
+├── CMakeLists.txt   # CMake build configuration
+├── LICENSE          # MIT License
+├── README.md
+└── recorder.cpp     # Application source
+```
+
 ## How It Works
 
 The application is structured around three classes:
@@ -95,6 +152,16 @@ Audio format: 48,000 Hz sample rate, 16-bit signed integer (`paInt16`), mono cha
 - No volume control, pause, or seek during playback.
 - Requires a working default input and output audio device.
 
+## Future Improvements
+
+- Save and load recordings as WAV files
+- Compress recordings using Opus
+- Multiple input/output device selection
+- Playback controls (pause/resume/seek)
+- Stereo recording support
+
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+Copyright (c) 2026 Sai Charan Mandakuriti

@@ -147,7 +147,6 @@ build\Release\recorder.exe    # Windows (Visual Studio generator)
 build\recorder.exe            # Windows (MinGW / Ninja)
 ```
 
-```
 ## Limitations
 
 - Recordings are stored in memory only and are lost when the program exits.

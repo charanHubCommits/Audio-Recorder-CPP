@@ -15,6 +15,50 @@ A cross-platform command-line audio recorder and player written in C++. It captu
 - CMake 3.20 or later
 - [PortAudio](http://www.portaudio.com/) development libraries
 
+
+## Project Structure
+
+```
+projectAudio/
+├── CMakeLists.txt   # CMake build configuration
+├── LICENSE          # MIT License
+├── README.md
+└── recorder.cpp     # Application source
+```
+
+## How It Works
+
+The application is structured around three classes:
+
+- **AudioRecorder** — Opens the default input stream (mono, 16-bit PCM, 48 kHz), reads audio in 960-frame chunks, and stops when Enter is pressed on a background thread.
+- **AudioPlayer** — Opens the default output stream with matching format and writes the full sample buffer for playback.
+- **AudioApp** — Runs the command loop and stores recordings in an in-memory map keyed by name.
+
+Audio format: 48,000 Hz sample rate, 16-bit signed integer (`paInt16`), mono channel, 960 frames per buffer (~20 ms).
+
+Available commands:
+
+| Command | Description |
+|---------|-------------|
+| `record <name>` | Start recording. Press Enter to stop. The recording is saved in memory under `<name>`. |
+| `play <name>` | Play back a previously recorded clip. |
+| `stop` | Exit the application. |
+
+### Example
+
+```
+Commands:
+To record :record <audio_name>
+To play audio: play <audio_name>
+record hello
+Recording...
+Press Enter to stop
+Recorded successfully!
+play hello
+stop
+
+```
+
 ### Installing PortAudio
 
 **Windows ([vcpkg](https://vcpkg.io/)):**
@@ -103,48 +147,7 @@ build\Release\recorder.exe    # Windows (Visual Studio generator)
 build\recorder.exe            # Windows (MinGW / Ninja)
 ```
 
-Available commands:
-
-| Command | Description |
-|---------|-------------|
-| `record <name>` | Start recording. Press Enter to stop. The recording is saved in memory under `<name>`. |
-| `play <name>` | Play back a previously recorded clip. |
-| `stop` | Exit the application. |
-
-### Example
-
 ```
-Commands:
-To record :record <audio_name>
-To play audio: play <audio_name>
-record hello
-Recording...
-Press Enter to stop
-Recorded successfully!
-play hello
-stop
-```
-
-## Project Structure
-
-```
-projectAudio/
-├── CMakeLists.txt   # CMake build configuration
-├── LICENSE          # MIT License
-├── README.md
-└── recorder.cpp     # Application source
-```
-
-## How It Works
-
-The application is structured around three classes:
-
-- **AudioRecorder** — Opens the default input stream (mono, 16-bit PCM, 48 kHz), reads audio in 960-frame chunks, and stops when Enter is pressed on a background thread.
-- **AudioPlayer** — Opens the default output stream with matching format and writes the full sample buffer for playback.
-- **AudioApp** — Runs the command loop and stores recordings in an in-memory map keyed by name.
-
-Audio format: 48,000 Hz sample rate, 16-bit signed integer (`paInt16`), mono channel, 960 frames per buffer (~20 ms).
-
 ## Limitations
 
 - Recordings are stored in memory only and are lost when the program exits.

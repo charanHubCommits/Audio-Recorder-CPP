@@ -1,10 +1,11 @@
 # Audio Recorder (C++)
 
-A cross-platform command-line audio recorder and player written in C++. It captures microphone input, stores recordings in memory by name, and plays them back through the default audio output device using [PortAudio](http://www.portaudio.com/). Supported on macOS, Linux, and Windows.
+A cross-platform command-line audio recorder and player written in C++. It captures microphone input, compresses recordings with [Opus](https://opus-codec.org/), stores them in memory by name, and plays them back through the default audio output device using [PortAudio](http://www.portaudio.com/). Supported on macOS, Linux, and Windows.
 
 ## Features
 
 - Record audio from the default input device (microphone)
+- Compress recordings in memory using the Opus codec
 - Play back named recordings through the default output device
 - Interactive CLI with simple commands
 - In-memory storage for multiple named recordings during a session
@@ -14,6 +15,7 @@ A cross-platform command-line audio recorder and player written in C++. It captu
 - C++ compiler with C++11 support (e.g. MSVC, `g++`, or `clang++`)
 - CMake 3.20 or later
 - [PortAudio](http://www.portaudio.com/) development libraries
+- [libopus](https://opus-codec.org/) development libraries
 
 
 ## Project Structure
@@ -59,36 +61,35 @@ stop
 
 ```
 
-### Installing PortAudio
-
+### Installing Dependecies
 **Windows ([vcpkg](https://vcpkg.io/)):**
 
 ```powershell
-vcpkg install portaudio
+vcpkg install portaudio opus
 ```
 
 **Windows ([MSYS2](https://www.msys2.org/)):**
 
 ```bash
-pacman -S mingw-w64-x86_64-portaudio
+pacman -S mingw-w64-x86_64-portaudio mingw-w64-x86_64-opus
 ```
 
 **macOS (Homebrew):**
 
 ```bash
-brew install portaudio
+brew install portaudio opus
 ```
 
 **Ubuntu/Debian:**
 
 ```bash
-sudo apt install portaudio19-dev
+sudo apt install portaudio19-dev libopus-dev
 ```
 
 **Fedora:**
 
 ```bash
-sudo dnf install portaudio-devel
+sudo dnf install portaudio-devel opus-devel
 ```
 
 ## Building
@@ -125,13 +126,15 @@ The executable is at `build/recorder.exe`.
 ### Manual compilation (macOS / Linux)
 
 ```bash
-g++ -std=c++11 recorder.cpp -o recorder -lportaudio -pthread
+g++ -std=c++11 recorder.cpp -o recorder -lportaudio -lopus -pthread
 ```
 
 On macOS with Homebrew, you may need to pass include and library paths:
 
 ```bash
-g++ -std=c++11 recorder.cpp -o recorder -I/opt/homebrew/include -L/opt/homebrew/lib -lportaudio -pthread
+g++ -std=c++11 recorder.cpp -o recorder \
+  -I/opt/homebrew/include -L/opt/homebrew/lib \
+  -lportaudio -lopus -pthread
 ```
 
 On Windows, use the CMake build instead of manual compilation.
@@ -150,16 +153,15 @@ build\recorder.exe            # Windows (MinGW / Ninja)
 ## Limitations
 
 - Recordings are stored in memory only and are lost when the program exits.
-- No support for saving to or loading from disk (e.g. WAV files).
+- No support for saving to or loading from disk (e.g. WAV or Ogg Opus files).
 - No volume control, pause, or seek during playback.
 - Requires a working default input and output audio device.
 
 ## Future Improvements
 
-- Save and load recordings as WAV files
-- Compress recordings using Opus
+- Save and load recordings as WAV or Ogg Opus files
 - Multiple input/output device selection
-- Playback controls (pause/resume/seek)
+- Playback controls (pause, resume, seek)
 - Stereo recording support
 
 ## License
